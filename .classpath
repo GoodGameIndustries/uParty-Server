@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="D:/GitHub/uParty/android/libs/kryo-2.23.1-SNAPSHOT-all-debug.jar"/>
+	<classpathentry exported="true" kind="lib" path="D:/GitHub/uParty/android/libs/kryonet-2.18.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

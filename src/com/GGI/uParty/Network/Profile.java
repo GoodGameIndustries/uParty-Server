@@ -1,0 +1,17 @@
+package com.GGI.uParty.Network;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Profile implements Serializable{
+	private static final long serialVersionUID = 6031323640522278194L;
+	public Date d = new Date();
+	public String name = "",email = "",pass = "",bio = "";
+	
+	public Profile(SignUp s){
+		this.d=s.date;
+		this.name=s.name;
+		this.email=s.email;
+		this.pass=s.pass;
+	}
+}
