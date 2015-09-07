@@ -9,11 +9,14 @@
 package com.GGI.uParty.Server;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import com.GGI.uParty.Network.Err;
+import com.GGI.uParty.Network.Login;
 import com.GGI.uParty.Network.Network;
 import com.GGI.uParty.Network.Profile;
 import com.GGI.uParty.Network.SignUp;
@@ -38,7 +41,7 @@ public class UPServer {
 		Network.register(server);
 		server.addListener(new ThreadedListener(new Listener(){
 			 public void received (Connection connection, Object object) {
-		          System.out.println("I received something");
+		          //System.out.println("I received something");
 		          if(object instanceof SignUp){
 		        	  SignUp o = (SignUp)object;
 		        	  String loc = o.email;
@@ -55,6 +58,23 @@ public class UPServer {
 		        		  Profile p = new Profile(o);
 		        		  saveProfile(p);
 		        	  }
+		          }
+		          
+		          else if(object instanceof Login){
+		        	  Login l = (Login)object;
+		        	  String loc = l.email;
+		        	  loc = loc.replace('.', '_');
+		        	  loc = loc.replace('@', '_');
+		        	  loc+=".profile";
+		        	  File f = new File("D:\\profiles\\"+loc);
+		        	  Profile p;
+		        	  Err e = new Err();
+		        	  e.message="Invalid email or password";
+		        	 if(f.exists()){ p=loadProfile(l);
+		        	 	if(l.pass.equals(p.pass)){connection.sendTCP(p);}
+		        	 	else{connection.sendTCP(e);}
+		        	 }
+		        	 else{connection.sendTCP(e);}
 		          }
 		       }
 			
@@ -83,5 +103,23 @@ public class UPServer {
 	}
 	}
 	
+	public Profile loadProfile(Login l){
+		Profile result = null;
+		 String loc = l.email;
+	   	  loc = loc.replace('.', '_');
+	   	  loc = loc.replace('@', '_');
+	   	  loc+=".profile";
+	   	  File f = new File("D:\\profiles\\"+loc);
+		
+	   	try {
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			result = (Profile) ois.readObject();
+		} catch (Exception e) {
+			System.out.println("load error");
+			e.printStackTrace();
+		}
+		return result;
+	}
 	
 }
