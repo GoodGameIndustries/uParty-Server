@@ -8,12 +8,27 @@
  */
 package com.GGI.uParty.Server;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Properties;
+import java.util.Random;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import com.GGI.uParty.Network.Err;
 import com.GGI.uParty.Network.Login;
@@ -25,11 +40,30 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import com.esotericsoftware.kryonet.Server;
 
+
 public class UPServer {
 
+	
+	private String htmlTemplate;
 	private UI ui= new UI();
 	private Server server;
+	
+	
 	public UPServer(){
+		StringBuilder contentBuilder = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader("uPartyEmail.html"));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		        contentBuilder.append(str);
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+		htmlTemplate = contentBuilder.toString();
+		
+		
+		
 		server = new Server();
 		server.start();
 		System.out.println("Server starting...");
@@ -56,7 +90,18 @@ public class UPServer {
 		        	  }
 		        	  else{
 		        		  Profile p = new Profile(o);
+		        		  Random ran = new Random();
+	        			  String code= (100000 + ran.nextInt(900000)) + "";
+	        			  p.verrCode=Integer.parseInt(code);
 		        		  saveProfile(p);
+		        		  
+		        		  try {
+		        			  
+		        			  String msg = htmlTemplate.replace("$confirmation", code);
+		        				new SendMailSSL().send(p.email,msg);
+		        			} catch (Exception e1) {
+		        				System.out.println("Unable to send email");
+		        			}
 		        	  }
 		          }
 		          
@@ -121,5 +166,6 @@ public class UPServer {
 		}
 		return result;
 	}
+	
 	
 }
