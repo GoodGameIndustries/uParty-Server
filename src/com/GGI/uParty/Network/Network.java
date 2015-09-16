@@ -15,6 +15,8 @@ public class Network {
 		kryo.register(Err.class);
 		kryo.register(Profile.class);
 		kryo.register(Login.class);
+		kryo.register(Verify.class);
+		kryo.register(ResendConfirmation.class);
 	}
 	
 }

@@ -34,7 +34,9 @@ import com.GGI.uParty.Network.Err;
 import com.GGI.uParty.Network.Login;
 import com.GGI.uParty.Network.Network;
 import com.GGI.uParty.Network.Profile;
+import com.GGI.uParty.Network.ResendConfirmation;
 import com.GGI.uParty.Network.SignUp;
+import com.GGI.uParty.Network.Verify;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
@@ -94,7 +96,7 @@ public class UPServer {
 	        			  String code= (100000 + ran.nextInt(900000)) + "";
 	        			  p.verrCode=Integer.parseInt(code);
 		        		  saveProfile(p);
-		        		  
+		        		  connection.sendTCP(p);
 		        		  try {
 		        			  
 		        			  String msg = htmlTemplate.replace("$confirmation", code);
@@ -115,11 +117,38 @@ public class UPServer {
 		        	  Profile p;
 		        	  Err e = new Err();
 		        	  e.message="Invalid email or password";
-		        	 if(f.exists()){ p=loadProfile(l);
+		        	 if(f.exists()){ p=loadProfile(l.email);
 		        	 	if(l.pass.equals(p.pass)){connection.sendTCP(p);}
 		        	 	else{connection.sendTCP(e);}
 		        	 }
 		        	 else{connection.sendTCP(e);}
+		          }
+		          
+		          else if(object instanceof Verify){
+		        	  Verify v = (Verify)object;
+		        	  Profile p = loadProfile(v.email);
+		        	  p.verr=true;
+		        	  saveProfile(p);
+		        	  
+		          }
+		          
+		          else if(object instanceof ResendConfirmation){
+		        	  ResendConfirmation r = (ResendConfirmation)object;
+		        	  Profile p = loadProfile(r.email);
+		        	  Random ran = new Random();
+        			  String code= (100000 + ran.nextInt(900000)) + "";
+        			  p.verrCode=Integer.parseInt(code);
+	        		  saveProfile(p);
+	        		  connection.sendTCP(p);
+	        		  try {
+	        			  
+	        			  String msg = htmlTemplate.replace("$confirmation", code);
+	        				new SendMailSSL().send(p.email,msg);
+	        			} catch (Exception e1) {
+	        				System.out.println("Unable to send email");
+	        			}
+		        	  
+		        	  
 		          }
 		       }
 			
@@ -148,9 +177,9 @@ public class UPServer {
 	}
 	}
 	
-	public Profile loadProfile(Login l){
+	public Profile loadProfile(String l){
 		Profile result = null;
-		 String loc = l.email;
+		 String loc = l;
 	   	  loc = loc.replace('.', '_');
 	   	  loc = loc.replace('@', '_');
 	   	  loc+=".profile";
