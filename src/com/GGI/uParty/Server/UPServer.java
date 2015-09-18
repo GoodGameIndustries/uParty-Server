@@ -33,7 +33,9 @@ import javax.mail.internet.MimeMessage;
 import com.GGI.uParty.Network.Err;
 import com.GGI.uParty.Network.Login;
 import com.GGI.uParty.Network.Network;
+import com.GGI.uParty.Network.PList;
 import com.GGI.uParty.Network.Profile;
+import com.GGI.uParty.Network.Refresh;
 import com.GGI.uParty.Network.ResendConfirmation;
 import com.GGI.uParty.Network.SignUp;
 import com.GGI.uParty.Network.Verify;
@@ -49,7 +51,7 @@ public class UPServer {
 	private String htmlTemplate;
 	private UI ui= new UI();
 	private Server server;
-	
+	private String path = "D:\\profiles\\";
 	
 	public UPServer(){
 		StringBuilder contentBuilder = new StringBuilder();
@@ -84,7 +86,7 @@ public class UPServer {
 		        	  loc = loc.replace('.', '_');
 		        	  loc = loc.replace('@', '_');
 		        	  loc+=".profile";
-		        	  File f = new File("D:\\profiles\\"+loc);
+		        	  File f = new File(path+loc);
 		        	  if(f.exists()){
 		        		  Err e = new Err();
 		        		  e.message="This email is in use";
@@ -109,19 +111,13 @@ public class UPServer {
 		          
 		          else if(object instanceof Login){
 		        	  Login l = (Login)object;
-		        	  String loc = l.email;
-		        	  loc = loc.replace('.', '_');
-		        	  loc = loc.replace('@', '_');
-		        	  loc+=".profile";
-		        	  File f = new File("D:\\profiles\\"+loc);
-		        	  Profile p;
+		        	 
+		        	  Profile p=null;
 		        	  Err e = new Err();
 		        	  e.message="Invalid email or password";
-		        	 if(f.exists()){ p=loadProfile(l.email);
-		        	 	if(l.pass.equals(p.pass)){connection.sendTCP(p);}
+		        	  	p=loadProfile(l.email);
+		        	 	if(p!=null&&l.pass.equals(p.pass)){connection.sendTCP(p);}
 		        	 	else{connection.sendTCP(e);}
-		        	 }
-		        	 else{connection.sendTCP(e);}
 		          }
 		          
 		          else if(object instanceof Verify){
@@ -130,6 +126,11 @@ public class UPServer {
 		        	  p.verr=true;
 		        	  saveProfile(p);
 		        	  
+		          }
+		          
+		          else if(object instanceof Refresh){
+		        	  Refresh r = (Refresh)object;
+		        	  connection.sendTCP(loadPList(r.p.email.split("@")[1]));
 		          }
 		          
 		          else if(object instanceof ResendConfirmation){
@@ -161,10 +162,14 @@ public class UPServer {
 	
 	public void saveProfile(Profile p){
 		 String loc = p.email;
-   	  loc = loc.replace('.', '_');
-   	  loc = loc.replace('@', '_');
+		 String dir="";
+	   	  loc = loc.replace('.', '_');
+	   	  dir = loc.split("@")[1];
+	   	  loc = loc.replace('@', '_');
    	  loc+=".profile";
-   	  File f = new File("D:\\profiles\\"+loc);
+   	  File directory = new File(path+dir);
+   	  if(!directory.exists()){directory.mkdir();savePList(new PList(dir));}
+   	  File f = new File(path+dir+"\\"+loc);
    	  
    	  try {
    		f.createNewFile();
@@ -178,23 +183,52 @@ public class UPServer {
 	}
 	
 	public Profile loadProfile(String l){
+		
 		Profile result = null;
-		 String loc = l;
+		try {
+		String loc = l;
+		 String dir="";
 	   	  loc = loc.replace('.', '_');
+	   	  dir = loc.split("@")[1];
 	   	  loc = loc.replace('@', '_');
 	   	  loc+=".profile";
-	   	  File f = new File("D:\\profiles\\"+loc);
+	   	  File f = new File(path+dir+"\\"+loc);
+	   	  
 		
-	   	try {
+	   	
 			FileInputStream fis = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			result = (Profile) ois.readObject();
 		} catch (Exception e) {
 			System.out.println("load error");
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return result;
 	}
 	
+	public void savePList(PList p){
+		try{
+			File f = new File(path+p.school+"\\"+"parties.pList");
+			f.createNewFile();
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(p);
+		}catch(Exception e){
+			System.out.println("party save error");
+		}
+	}
+	public PList loadPList(String school){
+		PList result = null;
+		school = school.replace('.', '_');
+		try{
+			File f = new File(path+school+"\\"+"parties.pList");
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			result = (PList) ois.readObject();
+		}catch(Exception e){
+			System.out.println("party load error");
+		}
+		return result;
+	}
 	
 }

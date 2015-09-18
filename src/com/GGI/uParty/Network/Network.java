@@ -1,5 +1,6 @@
 package com.GGI.uParty.Network;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.esotericsoftware.kryo.Kryo;
@@ -17,6 +18,9 @@ public class Network {
 		kryo.register(Login.class);
 		kryo.register(Verify.class);
 		kryo.register(ResendConfirmation.class);
+		kryo.register(PList.class);
+		kryo.register(Refresh.class);
+		kryo.register(ArrayList.class);
 	}
 	
 }
