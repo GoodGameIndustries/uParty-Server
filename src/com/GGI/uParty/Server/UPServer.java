@@ -51,7 +51,7 @@ public class UPServer {
 	private String htmlTemplate;
 	private UI ui= new UI();
 	private Server server;
-	private String path = "C:\\Users\\Administrator\\Google Drive\\uParty\\profiles";
+	private String path = "C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	
 	public UPServer(){
 		StringBuilder contentBuilder = new StringBuilder();
