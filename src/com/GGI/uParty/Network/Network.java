@@ -21,6 +21,7 @@ public class Network {
 		kryo.register(PList.class);
 		kryo.register(Refresh.class);
 		kryo.register(ArrayList.class);
+		kryo.register(CreateParty.class);
 	}
 	
 }

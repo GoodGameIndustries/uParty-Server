@@ -30,6 +30,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.GGI.uParty.Network.CreateParty;
 import com.GGI.uParty.Network.Err;
 import com.GGI.uParty.Network.Login;
 import com.GGI.uParty.Network.Network;
@@ -149,6 +150,13 @@ public class UPServer {
 	        				System.out.println("Unable to send email");
 	        			}
 		        	  
+		        	  
+		          }
+		          else if(object instanceof CreateParty){
+		        	  CreateParty cp = (CreateParty)object;
+		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
+		        	  pL.parties.add(cp.p);
+		        	  savePList(pL);
 		        	  
 		          }
 		       }
