@@ -237,6 +237,7 @@ public class UPServer {
 			result = (PList) ois.readObject();
 		}catch(Exception e){
 			System.out.println("party load error");
+			savePList(new PList(school));
 		}
 		return result;
 	}
