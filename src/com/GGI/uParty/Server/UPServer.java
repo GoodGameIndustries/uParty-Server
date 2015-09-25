@@ -131,7 +131,9 @@ public class UPServer {
 		          
 		          else if(object instanceof Refresh){
 		        	  Refresh r = (Refresh)object;
+		        	  try{
 		        	  connection.sendTCP(loadPList(r.p.email.split("@")[1]));
+		        	  }catch(Exception e){System.out.println("Send Error");}
 		          }
 		          
 		          else if(object instanceof ResendConfirmation){
