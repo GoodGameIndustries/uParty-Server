@@ -1,10 +1,15 @@
 package com.GGI.uParty.Network;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class Party {
+public class Party implements Serializable{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4763625482019105789L;
 	public String name="",where="",description="";
 	public Date d = new Date();
 	public int vote=0;
