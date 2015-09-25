@@ -238,6 +238,7 @@ public class UPServer {
 		}catch(Exception e){
 			System.out.println("party load error");
 			savePList(new PList(school));
+			loadPList(school);
 		}
 		return result;
 	}
