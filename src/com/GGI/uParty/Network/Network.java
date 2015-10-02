@@ -23,6 +23,8 @@ public class Network {
 		kryo.register(ArrayList.class);
 		kryo.register(CreateParty.class);
 		kryo.register(Party.class);
+		kryo.register(VoteUp.class);
+		kryo.register(VoteDown.class);
 	}
 	
 }

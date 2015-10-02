@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
 
@@ -40,6 +41,8 @@ import com.GGI.uParty.Network.Refresh;
 import com.GGI.uParty.Network.ResendConfirmation;
 import com.GGI.uParty.Network.SignUp;
 import com.GGI.uParty.Network.Verify;
+import com.GGI.uParty.Network.VoteDown;
+import com.GGI.uParty.Network.VoteUp;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
@@ -52,7 +55,8 @@ public class UPServer {
 	private String htmlTemplate;
 	private UI ui= new UI();
 	private Server server;
-	private String path = "C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
+	private boolean debug = true;
+	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	
 	public UPServer(){
 		StringBuilder contentBuilder = new StringBuilder();
@@ -72,6 +76,8 @@ public class UPServer {
 		server = new Server();
 		server.start();
 		System.out.println("Server starting...");
+		System.out.println("\tStart Time = "+new Date().toString());
+		System.out.println("\tDebug Mode = " + debug);
 		try {
 			server.bind(36693);
 		} catch (IOException e) {
@@ -157,8 +163,34 @@ public class UPServer {
 		          else if(object instanceof CreateParty){
 		        	  CreateParty cp = (CreateParty)object;
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
+		        	  cp.p.id=cp.p.name+cp.p.where+cp.p.description;
 		        	  pL.parties.add(cp.p);
 		        	  savePList(pL);
+		        	  
+		        	  
+		          }
+		          else if(object instanceof VoteUp){
+		        	  VoteUp v = (VoteUp)object;
+		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
+		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
+		        	  if(!v.p.upVote.contains(v.voter)){v.p.upVote.add(v.voter);}
+		        	  if(v.p.downVote.contains(v.voter)){v.p.downVote.remove(v.voter);}
+		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
+		        	  pL.parties.add(v.p);
+		        	  savePList(pL);
+		        	  connection.sendTCP(pL);
+		        	  
+		          }
+		          else if(object instanceof VoteDown){
+		        	  VoteDown v = (VoteDown)object;
+		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
+		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
+		        	  if(!v.p.downVote.contains(v.voter)){v.p.downVote.add(v.voter);}
+		        	  if(v.p.upVote.contains(v.voter)){v.p.upVote.remove(v.voter);}
+		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
+		        	  pL.parties.add(v.p);
+		        	  savePList(pL);
+		        	  connection.sendTCP(pL);
 		        	  
 		          }
 		       }
@@ -237,8 +269,9 @@ public class UPServer {
 			result = (PList) ois.readObject();
 		}catch(Exception e){
 			System.out.println("party load error");
-			savePList(new PList(school));
-			result=loadPList(school);
+			PList p =new PList(school);
+			savePList(p);
+			result=p;
 		}
 		return result;
 	}

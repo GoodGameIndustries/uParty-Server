@@ -13,6 +13,7 @@ public class Party implements Serializable{
 	public String name="",where="",description="";
 	public Date d = new Date();
 	public int vote=0;
+	public String id=name+where+description;
 	public Profile owner;
 	public ArrayList<Profile> upVote = new ArrayList<Profile>();
 	public ArrayList<Profile> downVote = new ArrayList<Profile>();

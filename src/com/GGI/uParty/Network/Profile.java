@@ -20,4 +20,12 @@ public class Profile implements Serializable{
 	public Profile(){
 		
 	}
+	
+	public boolean equals(Object o){
+		if(o instanceof Profile){
+			Profile p = (Profile) o;
+			return (name.equals(p.name)&&email.equals(p.email)&&pass.equals(p.pass));
+		}
+		return false;
+	}
 }
