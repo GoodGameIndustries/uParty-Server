@@ -33,6 +33,7 @@ import javax.mail.internet.MimeMessage;
 
 import com.GGI.uParty.Network.CreateParty;
 import com.GGI.uParty.Network.Err;
+import com.GGI.uParty.Network.Forgot;
 import com.GGI.uParty.Network.Login;
 import com.GGI.uParty.Network.Network;
 import com.GGI.uParty.Network.PList;
@@ -53,6 +54,7 @@ public class UPServer {
 
 	
 	private String htmlTemplate;
+	private String forgotTemplate;
 	private UI ui= new UI();
 	private Server server;
 	private boolean debug = true;
@@ -71,6 +73,18 @@ public class UPServer {
 		}
 		htmlTemplate = contentBuilder.toString();
 		
+		contentBuilder = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader("uPartyForgotEmail.html"));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		        contentBuilder.append(str);
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+		forgotTemplate = contentBuilder.toString();
+		
 		
 		
 		server = new Server();
@@ -78,6 +92,7 @@ public class UPServer {
 		System.out.println("Server starting...");
 		System.out.println("\tStart Time = "+new Date().toString());
 		System.out.println("\tDebug Mode = " + debug);
+		
 		try {
 			server.bind(36693);
 		} catch (IOException e) {
@@ -193,6 +208,18 @@ public class UPServer {
 		        	  connection.sendTCP(pL);
 		        	  
 		          }
+		          else if(object instanceof Forgot){
+		        	  Forgot f = (Forgot)object;
+		        	  Profile p = loadProfile(f.e);
+		        	  
+		        	  try {
+	        			  
+	        			  String msg = forgotTemplate.replace("$password", p.pass);
+	        				new SendMailSSL().send(p.email,msg);
+	        			} catch (Exception e1) {
+	        				System.out.println("Unable to send email");
+	        			}
+		          }
 		       }
 			
 		}));
@@ -273,7 +300,19 @@ public class UPServer {
 			savePList(p);
 			result=p;
 		}
+		result = clearOldParties(result);
+		savePList(result);
 		return result;
+	}
+
+	private PList clearOldParties(PList p) {
+		Date d = new Date();
+		for(int i = 0; i < p.parties.size(); i++){
+			if(d.getDate()!=p.parties.get(i).d.getDate()){
+				p.parties.remove(i);
+			}
+		}
+		return p;
 	}
 	
 }

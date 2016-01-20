@@ -25,6 +25,7 @@ public class Network {
 		kryo.register(Party.class);
 		kryo.register(VoteUp.class);
 		kryo.register(VoteDown.class);
+		kryo.register(Forgot.class);
 	}
 	
 }
