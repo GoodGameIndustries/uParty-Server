@@ -57,7 +57,7 @@ public class UPServer {
 	private String forgotTemplate;
 	private UI ui= new UI();
 	private Server server;
-	private boolean debug = true;
+	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	
 	public UPServer(){
