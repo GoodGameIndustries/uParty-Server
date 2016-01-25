@@ -308,7 +308,7 @@ public class UPServer {
 	private PList clearOldParties(PList p) {
 		Date d = new Date();
 		for(int i = 0; i < p.parties.size(); i++){
-			if(d.getDate()!=p.parties.get(i).d.getDate()){
+			if(Math.abs(d.getDate()-p.parties.get(i).d.getDate())>1){
 				p.parties.remove(i);
 			}
 		}
