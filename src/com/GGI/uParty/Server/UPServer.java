@@ -72,7 +72,7 @@ public class UPServer {
             public void run() {
                 System.exit(0);
             }
-        }, 5000);
+        }, 21600000);
 		
 		StringBuilder contentBuilder = new StringBuilder();
 		try {
