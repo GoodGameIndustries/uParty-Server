@@ -20,6 +20,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
@@ -59,8 +61,19 @@ public class UPServer {
 	private Server server;
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
+	private Timer timer;
 	
 	public UPServer(){
+		
+		timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                System.exit(0);
+            }
+        }, 5000);
+		
 		StringBuilder contentBuilder = new StringBuilder();
 		try {
 		    BufferedReader in = new BufferedReader(new FileReader("uPartyEmail.html"));
