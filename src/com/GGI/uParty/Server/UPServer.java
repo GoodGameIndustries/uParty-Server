@@ -150,7 +150,7 @@ public class UPServer {
 		        	  Login l = (Login)object;
 		        	 
 		        	  
-		        	  if(l.version==version){
+		        	  if(l.version.equals(version)){
 		        	  Profile p=null;
 		        	  Err e = new Err();
 		        	  e.message="Invalid email or password";
