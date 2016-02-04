@@ -62,6 +62,8 @@ public class UPServer {
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
+	public String version = "1.0";
+	
 	
 	public UPServer(){
 		
@@ -147,12 +149,20 @@ public class UPServer {
 		          else if(object instanceof Login){
 		        	  Login l = (Login)object;
 		        	 
+		        	  
+		        	  if(l.version==version){
 		        	  Profile p=null;
 		        	  Err e = new Err();
 		        	  e.message="Invalid email or password";
 		        	  	p=loadProfile(l.email);
 		        	 	if(p!=null&&l.pass.equals(p.pass)){connection.sendTCP(p);}
 		        	 	else{connection.sendTCP(e);}
+		        	  }
+		        	  else{
+		        		  Err e = new Err();
+		        		  e.message="Version";
+		        		  connection.sendTCP(e);
+		        	  }
 		          }
 		          
 		          else if(object instanceof Verify){
