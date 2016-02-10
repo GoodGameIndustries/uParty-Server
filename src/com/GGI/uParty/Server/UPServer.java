@@ -222,7 +222,7 @@ public class UPServer {
 		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
 		        	  pL.parties.add(v.p);
 		        	  savePList(pL);
-		        	  connection.sendTCP(pL);
+		        	  //connection.sendTCP(pL);
 		        	  
 		          }
 		          else if(object instanceof VoteDown){
@@ -234,7 +234,7 @@ public class UPServer {
 		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
 		        	  pL.parties.add(v.p);
 		        	  savePList(pL);
-		        	  connection.sendTCP(pL);
+		        	  //connection.sendTCP(pL);
 		        	  
 		          }
 		          else if(object instanceof Forgot){
