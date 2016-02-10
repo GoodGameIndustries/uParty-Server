@@ -62,7 +62,7 @@ public class UPServer {
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
-	public String version = "1.0";
+	public String version = "1.0.2";
 	
 	
 	public UPServer(){
@@ -176,8 +176,14 @@ public class UPServer {
 		          else if(object instanceof Refresh){
 		        	  Refresh r = (Refresh)object;
 		        	  try{
-		        	  connection.sendTCP(loadPList(r.p.email.split("@")[1]));
-		        	  }catch(Exception e){System.out.println("Send Error");}
+		        	  PList p =loadPList(r.p.email.split("@")[1]);
+		
+						for(int i = 0; i < p.parties.size();i++){
+							connection.sendTCP(p.parties.get(i));
+						}
+						
+		        	  }
+		        	  catch(Exception e){System.out.println("Send Error");}
 		          }
 		          
 		          else if(object instanceof ResendConfirmation){
