@@ -62,7 +62,7 @@ public class UPServer {
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
-	public String version = "1.0.2";
+	public String version = "1.0.3";
 	
 	
 	public UPServer(){
@@ -107,6 +107,7 @@ public class UPServer {
 		System.out.println("Server starting...");
 		System.out.println("\tStart Time = "+new Date().toString());
 		System.out.println("\tDebug Mode = " + debug);
+		System.out.println("\tVersion = "+version);
 		
 		try {
 			server.bind(36693);
