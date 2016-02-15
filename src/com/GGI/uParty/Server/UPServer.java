@@ -62,7 +62,7 @@ public class UPServer {
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
-	public String version = "1.0.3";
+	public String version = "1.0.4";
 	
 	
 	public UPServer(){
