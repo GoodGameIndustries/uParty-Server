@@ -63,7 +63,7 @@ public class UPServer {
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
 	public String version = "1.0.4";
-	
+	public String maxL="                                                                                                                                                                                         ";
 	
 	public UPServer(){
 		
@@ -208,6 +208,12 @@ public class UPServer {
 		          else if(object instanceof CreateParty){
 		        	  CreateParty cp = (CreateParty)object;
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
+		        	  cp.p.where=cp.p.where+maxL;
+		        	  cp.p.where=cp.p.where.substring(0,105);
+		        	  
+		        	  cp.p.description=cp.p.description+maxL;
+		        	  cp.p.description=cp.p.description.substring(0,105);
+		        	  
 		        	  cp.p.id=cp.p.name+cp.p.where+cp.p.description;
 		        	  pL.parties.add(cp.p);
 		        	  savePList(pL);
