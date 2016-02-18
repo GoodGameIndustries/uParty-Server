@@ -192,7 +192,9 @@ public class UPServer {
 		        	  PList p =loadPList(r.p.email.split("@")[1]);
 		
 						for(int i = 0; i < p.parties.size();i++){
+							if(p.parties.get(i).upVote.size()-p.parties.get(i).downVote.size()>-5){
 							connection.sendTCP(p.parties.get(i));
+							}
 						}
 						
 		        	  }
