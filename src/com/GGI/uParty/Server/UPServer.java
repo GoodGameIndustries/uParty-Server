@@ -64,7 +64,8 @@ public class UPServer {
 	private Timer timer;
 	public String version = "1.0.4";
 	public String maxL="                                                                                                                                                                                         ";
-	
+	public String bleep="**********************************************************************";
+	public String[] badWords;
 	public UPServer(){
 		
 		timer = new Timer();
@@ -100,7 +101,17 @@ public class UPServer {
 		}
 		forgotTemplate = contentBuilder.toString();
 		
-		
+		contentBuilder = new StringBuilder();
+		try {
+		    BufferedReader in = new BufferedReader(new FileReader("badWords.txt"));
+		    String str;
+		    while ((str = in.readLine()) != null) {
+		        contentBuilder.append(":"+str);
+		    }
+		    in.close();
+		} catch (IOException e) {
+		}
+		badWords = contentBuilder.toString().split(":");
 		
 		server = new Server();
 		server.start();
@@ -108,6 +119,7 @@ public class UPServer {
 		System.out.println("\tStart Time = "+new Date().toString());
 		System.out.println("\tDebug Mode = " + debug);
 		System.out.println("\tVersion = "+version);
+		System.out.println("\tBad Words Loaded = "+badWords.length);
 		
 		try {
 			server.bind(36693);
@@ -210,9 +222,13 @@ public class UPServer {
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
 		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=cp.p.where.substring(0,105);
+		        	  cp.p.where=badWords(cp.p.where);
 		        	  
 		        	  cp.p.description=cp.p.description+maxL;
 		        	  cp.p.description=cp.p.description.substring(0,105);
+		        	  cp.p.description=badWords(cp.p.description);
+		        	  
+		        	  cp.p.name=badWords(cp.p.name);
 		        	  
 		        	  cp.p.id=cp.p.name+cp.p.where+cp.p.description;
 		        	  pL.parties.add(cp.p);
@@ -257,6 +273,14 @@ public class UPServer {
 	        			}
 		          }
 		       }
+
+			private String badWords(String where) {
+				String result = where;
+				for(int i = 0; i < badWords.length; i++){
+					result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()-1));
+				}
+				return result;
+			}
 			
 		}));
 	}
