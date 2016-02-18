@@ -224,13 +224,13 @@ public class UPServer {
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
 		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=cp.p.where.substring(0,105);
-		        	  cp.p.where=badWords(cp.p.where);
+		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
 		        	  
 		        	  cp.p.description=cp.p.description+maxL;
 		        	  cp.p.description=cp.p.description.substring(0,105);
-		        	  cp.p.description=badWords(cp.p.description);
+		        	  cp.p.description=badWords(cp.p.description.toLowerCase());
 		        	  
-		        	  cp.p.name=badWords(cp.p.name);
+		        	  cp.p.name=badWords(cp.p.name.toLowerCase());
 		        	  
 		        	  cp.p.id=cp.p.name+cp.p.where+cp.p.description;
 		        	  pL.parties.add(cp.p);
@@ -279,7 +279,7 @@ public class UPServer {
 			private String badWords(String where) {
 				String result = where;
 				for(int i = 0; i < badWords.length; i++){
-					if(badWords[i]!=null&&badWords.length>0){
+					if(badWords[i]!=null&&badWords[i].length()>0){
 					result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()-1));
 					}
 					}
