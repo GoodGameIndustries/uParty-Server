@@ -60,7 +60,7 @@ public class UPServer {
 	private UI ui= new UI();
 	private Server server;
 	private boolean debug = false;
-	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
+	private String path = true?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
 	public String version = "1.0.4";
 	public String maxL="                                                                                                                                                                                         ";
@@ -224,6 +224,7 @@ public class UPServer {
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
 		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=cp.p.where.substring(0,105);
+		        	  
 		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
 		        	  
 		        	  cp.p.description=cp.p.description+maxL;
@@ -278,11 +279,13 @@ public class UPServer {
 
 			private String badWords(String where) {
 				String result = where;
+				//System.out.println(result);
 				for(int i = 0; i < badWords.length; i++){
 					if(badWords[i]!=null&&badWords[i].length()>0){
-					result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()-1));
+					result=result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()));
 					}
 					}
+				//System.out.println(result);
 				return result;
 			}
 			
