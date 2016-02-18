@@ -279,8 +279,10 @@ public class UPServer {
 			private String badWords(String where) {
 				String result = where;
 				for(int i = 0; i < badWords.length; i++){
+					if(badWords[i]!=null&&badWords.length>0){
 					result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()-1));
-				}
+					}
+					}
 				return result;
 			}
 			
