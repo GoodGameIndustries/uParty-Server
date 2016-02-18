@@ -41,6 +41,7 @@ import com.GGI.uParty.Network.Network;
 import com.GGI.uParty.Network.PList;
 import com.GGI.uParty.Network.Profile;
 import com.GGI.uParty.Network.Refresh;
+import com.GGI.uParty.Network.Report;
 import com.GGI.uParty.Network.ResendConfirmation;
 import com.GGI.uParty.Network.SignUp;
 import com.GGI.uParty.Network.Verify;
@@ -62,7 +63,7 @@ public class UPServer {
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
-	public String version = "1.0.4";
+	public String version = "1.0.5";
 	public String maxL="                                                                                                                                                                                         ";
 	public String bleep="**********************************************************************";
 	public String[] badWords;
@@ -271,6 +272,29 @@ public class UPServer {
 	        			  
 	        			  String msg = forgotTemplate.replace("$password", p.pass);
 	        				new SendMailSSL().send(p.email,msg);
+	        			} catch (Exception e1) {
+	        				System.out.println("Unable to send email");
+	        			}
+		          }
+		          else if(object instanceof VoteDown){
+		        	  VoteDown v = (VoteDown)object;
+		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
+		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
+		        	  if(!v.p.downVote.contains(v.voter)){v.p.downVote.add(v.voter);}
+		        	  if(v.p.upVote.contains(v.voter)){v.p.upVote.remove(v.voter);}
+		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
+		        	  pL.parties.add(v.p);
+		        	  savePList(pL);
+		        	  //connection.sendTCP(pL);
+		        	  
+		          }
+		          else if(object instanceof Report){
+		        	  Report r = (Report) object;
+		        	  
+		        	  String msg = "Reporter: "+r.rep.email+"\nParty-----\nName: "+r.p.name+"\nDescription: "+r.p.description+
+		        			  "\nLocation: "+r.p.where+"\nOwner: "+r.p.owner.email;
+		        	  try {
+	        				new SendMailSSL().send("goodgameindustries@gmail.com",msg);
 	        			} catch (Exception e1) {
 	        				System.out.println("Unable to send email");
 	        			}

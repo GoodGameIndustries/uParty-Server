@@ -17,4 +17,5 @@ public class Party implements Serializable{
 	public Profile owner;
 	public ArrayList<Profile> upVote = new ArrayList<Profile>();
 	public ArrayList<Profile> downVote = new ArrayList<Profile>();
+
 }
