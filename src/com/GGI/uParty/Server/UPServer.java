@@ -16,22 +16,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.AddressException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 import com.GGI.uParty.Network.CreateParty;
 import com.GGI.uParty.Network.Err;
@@ -58,7 +47,7 @@ public class UPServer {
 	
 	private String htmlTemplate;
 	private String forgotTemplate;
-	private UI ui= new UI();
+	private UI ui= new UI(this);
 	private Server server;
 	private boolean debug = false;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
@@ -67,6 +56,9 @@ public class UPServer {
 	public String maxL="                                                                                                                                                                                         ";
 	public String bleep="**********************************************************************";
 	public String[] badWords;
+	public String log="";
+	public ArrayList<Connected> connections = new ArrayList<Connected>();
+	
 	public UPServer(){
 		
 		timer = new Timer();
@@ -116,11 +108,11 @@ public class UPServer {
 		
 		server = new Server();
 		server.start();
-		System.out.println("Server starting...");
-		System.out.println("\tStart Time = "+new Date().toString());
-		System.out.println("\tDebug Mode = " + debug);
-		System.out.println("\tVersion = "+version);
-		System.out.println("\tBad Words Loaded = "+badWords.length);
+		printConsole("Server starting...");
+		printConsole("\tStart Time = "+new Date().toString());
+		printConsole("\tDebug Mode = " + debug);
+		printConsole("\tVersion = "+version);
+		printConsole("\tBad Words Loaded = "+badWords.length);
 		
 		try {
 			server.bind(36693);
@@ -130,7 +122,7 @@ public class UPServer {
 		Network.register(server);
 		server.addListener(new ThreadedListener(new Listener(){
 			 public void received (Connection connection, Object object) {
-		          //System.out.println("I received something");
+		          //printConsole("I received something");
 		          if(object instanceof SignUp){
 		        	  SignUp o = (SignUp)object;
 		        	  String loc = o.email;
@@ -155,7 +147,7 @@ public class UPServer {
 		        			  String msg = htmlTemplate.replace("$confirmation", code);
 		        				new SendMailSSL().send(p.email,msg);
 		        			} catch (Exception e1) {
-		        				System.out.println("Unable to send email");
+		        				printConsole("Unable to send email");
 		        			}
 		        	  }
 		          }
@@ -189,6 +181,16 @@ public class UPServer {
 		          
 		          else if(object instanceof Refresh){
 		        	  Refresh r = (Refresh)object;
+		        	  
+		        	  for(int i = 0; i < connections.size();i++){
+		        		  if(connections.get(i).p.email==r.p.email){
+		        			  connections.remove(i);
+		        			  connections.add(0,new Connected(r.p,new Date()));
+		        			  break;
+		        		  }
+		        	  }
+		        	  ui.repaint();
+		        	  
 		        	  try{
 		        	  PList p =loadPList(r.p.email.split("@")[1]);
 		
@@ -199,7 +201,7 @@ public class UPServer {
 						}
 						
 		        	  }
-		        	  catch(Exception e){System.out.println("Send Error");}
+		        	  catch(Exception e){printConsole("Send Error");}
 		          }
 		          
 		          else if(object instanceof ResendConfirmation){
@@ -215,7 +217,7 @@ public class UPServer {
 	        			  String msg = htmlTemplate.replace("$confirmation", code);
 	        				new SendMailSSL().send(p.email,msg);
 	        			} catch (Exception e1) {
-	        				System.out.println("Unable to send email");
+	        				printConsole("Unable to send email");
 	        			}
 		        	  
 		        	  
@@ -273,7 +275,7 @@ public class UPServer {
 	        			  String msg = forgotTemplate.replace("$password", p.pass);
 	        				new SendMailSSL().send(p.email,msg);
 	        			} catch (Exception e1) {
-	        				System.out.println("Unable to send email");
+	        				printConsole("Unable to send email");
 	        			}
 		          }
 		          else if(object instanceof VoteDown){
@@ -296,26 +298,33 @@ public class UPServer {
 		        	  try {
 	        				new SendMailSSL().send("goodgameindustries@gmail.com",msg);
 	        			} catch (Exception e1) {
-	        				System.out.println("Unable to send email");
+	        				printConsole("Unable to send email");
 	        			}
 		          }
 		       }
 
 			private String badWords(String where) {
 				String result = where;
-				//System.out.println(result);
+				//printConsole(result);
 				for(int i = 0; i < badWords.length; i++){
 					if(badWords[i]!=null&&badWords[i].length()>0){
 					result=result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()));
 					}
 					}
-				//System.out.println(result);
+				//printConsole(result);
 				return result;
 			}
 			
 		}));
 	}
 	
+	private void printConsole(String string) {
+		Date d = new Date();
+		log+="\n"+"("+d.getHours()+":"+d.getMinutes()+")"+" UPServer:> "+string;
+		ui.repaint();
+		
+	}
+
 	public static void main(String[] args){
 		new UPServer();
 	}
@@ -337,7 +346,7 @@ public class UPServer {
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeObject(p);
 	} catch (Exception e) {
-		System.out.println("Save error");
+		printConsole("Save error");
 		e.printStackTrace();
 	}
 	}
@@ -360,7 +369,7 @@ public class UPServer {
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			result = (Profile) ois.readObject();
 		} catch (Exception e) {
-			System.out.println("load error");
+			printConsole("load error");
 			//e.printStackTrace();
 		}
 		return result;
@@ -374,7 +383,7 @@ public class UPServer {
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 			oos.writeObject(p);
 		}catch(Exception e){
-			System.out.println("party save error");
+			printConsole("party save error");
 		}
 	}
 	public PList loadPList(String school){
@@ -386,7 +395,7 @@ public class UPServer {
 			ObjectInputStream ois = new ObjectInputStream(fis);
 			result = (PList) ois.readObject();
 		}catch(Exception e){
-			System.out.println("party load error");
+			printConsole("party load error");
 			PList p =new PList(school);
 			savePList(p);
 			result=p;
