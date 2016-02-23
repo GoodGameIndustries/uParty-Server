@@ -80,7 +80,7 @@ public class UI extends JFrame{
 		String result = "";
 		Date d = new Date();
 		for(int i = 0; i < server.connections.size(); i++){
-			if(d.getTime()-server.connections.get(i).d.getTime()>120000){server.connections.remove(i);}
+			if(Math.abs(d.getTime()-server.connections.get(i).d.getTime())>120000){server.connections.remove(i);}
 			else{
 				result+="\n"+server.connections.get(i).p.name+"("+server.connections.get(i).p.email+")";
 			}

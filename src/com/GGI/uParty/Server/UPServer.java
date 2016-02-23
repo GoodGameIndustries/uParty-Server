@@ -181,14 +181,20 @@ public class UPServer {
 		          
 		          else if(object instanceof Refresh){
 		        	  Refresh r = (Refresh)object;
+		        	  boolean add = false;
 		        	  
 		        	  for(int i = 0; i < connections.size();i++){
 		        		  if(connections.get(i).p.email==r.p.email){
 		        			  connections.remove(i);
 		        			  connections.add(0,new Connected(r.p,new Date()));
+		        			  add=true;
 		        			  break;
 		        		  }
 		        	  }
+		        	  if(!add){
+		        		  connections.add(0,new Connected(r.p,new Date()));
+		        	  }
+		        	  
 		        	  ui.repaint();
 		        	  
 		        	  try{
