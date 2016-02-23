@@ -184,7 +184,7 @@ public class UPServer {
 		        	  boolean add = false;
 		        	  
 		        	  for(int i = 0; i < connections.size();i++){
-		        		  if(connections.get(i).p.email==r.p.email){
+		        		  if(connections.get(i).p.email.equals(r.p.email)){
 		        			  connections.remove(i);
 		        			  connections.add(0,new Connected(r.p,new Date()));
 		        			  add=true;
