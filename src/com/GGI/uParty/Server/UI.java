@@ -5,6 +5,7 @@ package com.GGI.uParty.Server;
 
 import java.awt.BorderLayout;
 import java.awt.ScrollPane;
+import java.util.Date;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -77,11 +78,14 @@ public class UI extends JFrame{
 
 	private String buildConnected() {
 		String result = "";
-		result+="There are "+server.connections.size()+" users connected: ";
+		Date d = new Date();
 		for(int i = 0; i < server.connections.size(); i++){
-			result+="\n"+server.connections.get(i).p.name+"("+server.connections.get(i).p.email+")";
+			if(d.getTime()-server.connections.get(i).d.getTime()>120000){server.connections.remove(i);}
+			else{
+				result+="\n"+server.connections.get(i).p.name+"("+server.connections.get(i).p.email+")";
+			}
 		}
-		
+		result="There are "+server.connections.size()+" users connected: "+result;
 		return result;
 	}
 	
