@@ -31,6 +31,27 @@ public class UI extends JFrame{
 	public UI(UPServer server){
 		super("uParty Server");
 		this.server=server;
+		
+		Thread t = new Thread(new Runnable(){
+
+			@Override
+			public void run() {
+				while(true){
+					repaint();
+					try {
+						Thread.sleep(60000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				
+			}
+			
+		});
+		
+	
+		
 		setSize(800,500);
 		
 		scroll = new ScrollPane();
@@ -68,6 +89,7 @@ public class UI extends JFrame{
 		
 		add(sideP,BorderLayout.EAST);
 		setVisible(true);
+		t.start();
 	}
 	
 	public void repaint(){
