@@ -330,6 +330,7 @@ public class UPServer {
 				}
 				
 				for(int i = 0; i < breakDown.length;i++){
+					if(i>0){result+=" ";}
 					result+=breakDown[i];
 				}
 				//printConsole(result);
