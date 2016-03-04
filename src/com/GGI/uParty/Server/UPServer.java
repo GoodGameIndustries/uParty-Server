@@ -310,13 +310,28 @@ public class UPServer {
 		       }
 
 			private String badWords(String where) {
-				String result = where;
+				String result = "";
 				//printConsole(result);
+				/**
 				for(int i = 0; i < badWords.length; i++){
 					if(badWords[i]!=null&&badWords[i].length()>0){
 					result=result.replaceAll(badWords[i], bleep.substring(0,badWords[i].length()));
 					}
 					}
+					*/
+				
+				String[] breakDown = where.split(" ");
+				for(int i = 0; i < breakDown.length; i++){
+					for(int j = 0; j < badWords.length; j++){
+						if(breakDown[i].equals(badWords[j])){
+							breakDown[i]=bleep.substring(0,breakDown[i].length());
+						}
+					}
+				}
+				
+				for(int i = 0; i < breakDown.length;i++){
+					result+=breakDown[i];
+				}
 				//printConsole(result);
 				return result;
 			}
