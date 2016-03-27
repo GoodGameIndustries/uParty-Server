@@ -202,7 +202,17 @@ public class UPServer {
 		
 						for(int i = 0; i < p.parties.size();i++){
 							if(p.parties.get(i).upVote.size()-p.parties.get(i).downVote.size()>-5){
-							connection.sendTCP(p.parties.get(i));
+								if(p.parties.get(i).description.length()>=105&&p.parties.get(i).where.length()>=105){
+								connection.sendTCP(p.parties.get(i));
+								}
+								else{
+									p.parties.get(i).description=(p.parties.get(i).description+maxL).substring(0, 105);
+									p.parties.get(i).where=(p.parties.get(i).where+maxL).substring(0, 105);
+									connection.sendTCP(p.parties.get(i));
+								}
+							
+							
+							
 							}
 						}
 						
@@ -232,14 +242,14 @@ public class UPServer {
 		        	  CreateParty cp = (CreateParty)object;
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
 		        	  cp.p.where=cp.p.where+maxL;
+		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
 		        	  cp.p.where=cp.p.where.substring(0,105);
 		        	  
-		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
+		        	  
 		        	  
 		        	  cp.p.description=cp.p.description+maxL;
-		        	  cp.p.description+="                                                                                                                                                                                                                                                   ";
-		        	  cp.p.description=cp.p.description.substring(0,105);
 		        	  cp.p.description=badWords(cp.p.description.toLowerCase());
+		        	  cp.p.description=cp.p.description.substring(0,105);
 		        	  
 		        	  cp.p.name=badWords(cp.p.name.toLowerCase());
 		        	  
