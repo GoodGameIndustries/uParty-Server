@@ -241,14 +241,14 @@ public class UPServer {
 		          else if(object instanceof CreateParty){
 		        	  CreateParty cp = (CreateParty)object;
 		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
-		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
+		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=cp.p.where.substring(0,105);
 		        	  
 		        	  
 		        	  
-		        	  cp.p.description=cp.p.description+maxL;
 		        	  cp.p.description=badWords(cp.p.description.toLowerCase());
+		        	  cp.p.description=cp.p.description+maxL;
 		        	  cp.p.description=cp.p.description.substring(0,105);
 		        	  
 		        	  cp.p.name=badWords(cp.p.name.toLowerCase());
