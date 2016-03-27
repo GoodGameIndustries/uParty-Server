@@ -237,6 +237,7 @@ public class UPServer {
 		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
 		        	  
 		        	  cp.p.description=cp.p.description+maxL;
+		        	  cp.p.description+="                                                                                                                                                                                                                                                   ";
 		        	  cp.p.description=cp.p.description.substring(0,105);
 		        	  cp.p.description=badWords(cp.p.description.toLowerCase());
 		        	  
