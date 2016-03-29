@@ -36,6 +36,8 @@ import com.GGI.uParty.Network.SignUp;
 import com.GGI.uParty.Network.Verify;
 import com.GGI.uParty.Network.VoteDown;
 import com.GGI.uParty.Network.VoteUp;
+import com.GGI.uParty.Server.Data.RefreshCheckpoint;
+import com.GGI.uParty.Server.Data.RefreshManager;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
@@ -58,9 +60,13 @@ public class UPServer {
 	public String[] badWords;
 	public String log="";
 	public ArrayList<Connected> connections = new ArrayList<Connected>();
+	public RefreshManager rM;
+	public ArrayList<RefreshCheckpoint>  readyToRefresh = new ArrayList<RefreshCheckpoint>();
 	
 	public UPServer(){
-		
+		rM=new RefreshManager(this);
+		Thread t = rM;
+		t.start();
 		timer = new Timer();
         timer.schedule(new TimerTask() {
 
@@ -194,30 +200,13 @@ public class UPServer {
 		        	  if(!add){
 		        		  connections.add(0,new Connected(r.p,new Date()));
 		        	  }
-		        	  
+		        	  RefreshCheckpoint cP = new RefreshCheckpoint(connection,new Date(),r.p.email);
+		        	  if(!readyToRefresh.contains(cP)){
+		        	  readyToRefresh.add(cP);
+		        	  }
 		        	  ui.repaint();
 		        	  
-		        	  try{
-		        	  PList p =loadPList(r.p.email.split("@")[1]);
-		
-						for(int i = 0; i < p.parties.size();i++){
-							if(p.parties.get(i).upVote.size()-p.parties.get(i).downVote.size()>-5){
-								if(p.parties.get(i).description.length()>=105&&p.parties.get(i).where.length()>=105){
-								connection.sendTCP(p.parties.get(i));
-								}
-								else{
-									p.parties.get(i).description=(p.parties.get(i).description+maxL).substring(0, 105);
-									p.parties.get(i).where=(p.parties.get(i).where+maxL).substring(0, 105);
-									connection.sendTCP(p.parties.get(i));
-								}
-							
-							
-							
-							}
-						}
-						
-		        	  }
-		        	  catch(Exception e){printConsole("Send Error");}
+		        	  
 		          }
 		          
 		          else if(object instanceof ResendConfirmation){
@@ -446,6 +435,31 @@ public class UPServer {
 			}
 		}
 		return p;
+	}
+	
+	public void refresh(RefreshCheckpoint r){
+		System.out.println("refreshing");
+		try{
+      	  PList p =loadPList(r.email.split("@")[1]);
+
+				for(int i = 0; i < p.parties.size();i++){
+					if(p.parties.get(i).upVote.size()-p.parties.get(i).downVote.size()>-5){
+						if(p.parties.get(i).description.length()>=105&&p.parties.get(i).where.length()>=105){
+						r.connection.sendTCP(p.parties.get(i));
+						}
+						else{
+							p.parties.get(i).description=(p.parties.get(i).description+maxL).substring(0, 105);
+							p.parties.get(i).where=(p.parties.get(i).where+maxL).substring(0, 105);
+							r.connection.sendTCP(p.parties.get(i));
+						}
+					
+					
+					
+					}
+				}
+				
+      	  }
+      	  catch(Exception e){printConsole("Send Error");}
 	}
 	
 }
