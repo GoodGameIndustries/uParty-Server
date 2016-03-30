@@ -229,7 +229,8 @@ public class UPServer {
 		          }
 		          else if(object instanceof CreateParty){
 		        	  CreateParty cp = (CreateParty)object;
-		        	  PList pL = loadPList(cp.p.owner.email.split("@")[1]);
+		        	  String[] split = cp.p.owner.email.split("@")[1].split("\\.");
+		        	  PList pL = loadPList(split[split.length-2]+"_"+split[split.length-1]);
 		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
 		        	  cp.p.where=cp.p.where+maxL;
 		        	  cp.p.where=cp.p.where.substring(0,105);
@@ -250,7 +251,8 @@ public class UPServer {
 		          }
 		          else if(object instanceof VoteUp){
 		        	  VoteUp v = (VoteUp)object;
-		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
+		        	  String[] split = v.p.owner.email.split("@")[1].split("\\.");
+		        	  PList pL = loadPList(split[split.length-2]+"_"+split[split.length-1]);
 		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
 		        	  if(!v.p.upVote.contains(v.voter)){v.p.upVote.add(v.voter);}
 		        	  if(v.p.downVote.contains(v.voter)){v.p.downVote.remove(v.voter);}
@@ -262,7 +264,8 @@ public class UPServer {
 		          }
 		          else if(object instanceof VoteDown){
 		        	  VoteDown v = (VoteDown)object;
-		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
+		        	  String[] split = v.p.owner.email.split("@")[1].split("\\.");
+		        	  PList pL = loadPList(split[split.length-2]+"_"+split[split.length-1]);
 		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
 		        	  if(!v.p.downVote.contains(v.voter)){v.p.downVote.add(v.voter);}
 		        	  if(v.p.upVote.contains(v.voter)){v.p.upVote.remove(v.voter);}
@@ -284,18 +287,7 @@ public class UPServer {
 	        				printConsole("Unable to send email");
 	        			}
 		          }
-		          else if(object instanceof VoteDown){
-		        	  VoteDown v = (VoteDown)object;
-		        	  PList pL = loadPList(v.voter.email.split("@")[1]);
-		        	  for(int i = 0;i<pL.parties.size();i++){if(v.p.id.equals(pL.parties.get(i).id)){pL.parties.remove(i);}}
-		        	  if(!v.p.downVote.contains(v.voter)){v.p.downVote.add(v.voter);}
-		        	  if(v.p.upVote.contains(v.voter)){v.p.upVote.remove(v.voter);}
-		        	  v.p.vote=v.p.upVote.size()-v.p.downVote.size();
-		        	  pL.parties.add(v.p);
-		        	  savePList(pL);
-		        	  //connection.sendTCP(pL);
-		        	  
-		          }
+		          
 		          else if(object instanceof Report){
 		        	  Report r = (Report) object;
 		        	  
@@ -354,8 +346,11 @@ public class UPServer {
 	public void saveProfile(Profile p){
 		 String loc = p.email;
 		 String dir="";
+		 System.out.println(p.email);
+	   	 String[] split = loc.split("@")[1].split("\\.");
+	   	 System.out.println(split.length);
+	   	  dir = split[split.length-2]+"_"+split[split.length-1];
 	   	  loc = loc.replace('.', '_');
-	   	  dir = loc.split("@")[1];
 	   	  loc = loc.replace('@', '_');
    	  loc+=".profile";
    	  File directory = new File(path+dir);
@@ -379,8 +374,10 @@ public class UPServer {
 		try {
 		String loc = l;
 		 String dir="";
+	   	  
+	   	 String[] split = loc.split("@")[1].split("\\.");
+	   	 dir = split[split.length-2]+"_"+split[split.length-1];
 	   	  loc = loc.replace('.', '_');
-	   	  dir = loc.split("@")[1];
 	   	  loc = loc.replace('@', '_');
 	   	  loc+=".profile";
 	   	  File f = new File(path+dir+"\\"+loc);
@@ -440,7 +437,9 @@ public class UPServer {
 	public void refresh(RefreshCheckpoint r){
 		System.out.println("refreshing");
 		try{
-      	  PList p =loadPList(r.email.split("@")[1]);
+			
+			String[] split = r.email.split("@")[1].split("\\.");
+      	  PList p = loadPList(split[split.length-2]+"_"+split[split.length-1]);
 
 				for(int i = 0; i < p.parties.size();i++){
 					if(p.parties.get(i).upVote.size()-p.parties.get(i).downVote.size()>-5){
