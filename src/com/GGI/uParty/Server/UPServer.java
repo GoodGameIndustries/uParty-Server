@@ -51,11 +51,11 @@ public class UPServer {
 	private String forgotTemplate;
 	private UI ui= new UI(this);
 	private Server server;
-	private boolean debug = false;
+	private boolean debug = true;
 	private String path = debug?"D:\\profiles\\":"C:\\Users\\Administrator\\Google Drive\\uParty\\profiles\\";
 	private Timer timer;
 	public String version = "1.0.8";
-	public String maxL="                                                                                                                                                                                         ";
+	//public String maxL="                                                                                                                                                                                         ";
 	public String bleep="**********************************************************************";
 	public String[] badWords;
 	public String log="";
@@ -232,14 +232,14 @@ public class UPServer {
 		        	  String[] split = cp.p.owner.email.split("@")[1].split("\\.");
 		        	  PList pL = loadPList(split[split.length-2]+"_"+split[split.length-1]);
 		        	  cp.p.where=badWords(cp.p.where.toLowerCase());
-		        	  cp.p.where=cp.p.where+maxL;
-		        	  cp.p.where=cp.p.where.substring(0,105);
+		        	  cp.p.where=cp.p.where;
+		        	 
 		        	  
 		        	  
 		        	  
 		        	  cp.p.description=badWords(cp.p.description.toLowerCase());
-		        	  cp.p.description=cp.p.description+maxL;
-		        	  cp.p.description=cp.p.description.substring(0,105);
+		        	  cp.p.description=cp.p.description;
+		        	  
 		        	  
 		        	  cp.p.name=badWords(cp.p.name.toLowerCase());
 		        	  
@@ -427,9 +427,11 @@ public class UPServer {
 	private PList clearOldParties(PList p) {
 		Date d = new Date();
 		for(int i = 0; i < p.parties.size(); i++){
-			if(Math.abs(d.getDate()-p.parties.get(i).d.getDate())>1){
+			
+			if(d.getTime()-p.parties.get(i).endD.getTime()>0){
 				p.parties.remove(i);
 			}
+			
 		}
 		return p;
 	}
@@ -447,8 +449,8 @@ public class UPServer {
 						r.connection.sendTCP(p.parties.get(i));
 						}
 						else{
-							p.parties.get(i).description=(p.parties.get(i).description+maxL).substring(0, 105);
-							p.parties.get(i).where=(p.parties.get(i).where+maxL).substring(0, 105);
+							//p.parties.get(i).description=(p.parties.get(i).description+maxL).substring(0, 105);
+							//p.parties.get(i).where=(p.parties.get(i).where+maxL).substring(0, 105);
 							r.connection.sendTCP(p.parties.get(i));
 						}
 					
